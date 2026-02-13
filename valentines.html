@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For My Mahal | Valentine's Day</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* (styles unchanged – same as original) */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            color: #5a3d5c;
+            overflow-x: hidden;
+            position: relative;
+            background: linear-gradient(135deg, #ffd6e7 0%, #ffafcc 50%, #ffc8dd 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Floating Images Background - initially hidden */
+        .floating-images {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+            opacity: 0;
+            transition: opacity 1.5s ease;
+        }
+        .floating-images.active {
+            opacity: 1;
+        }
+
+        .floating-image {
+            position: absolute;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+            opacity: 0.85;
+            transform: translateY(100vh);
+            animation-timing-function: ease-in-out;
+            border: 3px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .floating-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Light overlay */
+        .light-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.6);
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            margin: 0 auto;
+            text-align: center;
+            position: relative;
+            z-index: 20;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .header {
+            margin-bottom: 40px;        /* increased space below header */
+            opacity: 0;
+            transform: translateY(-20px);
+            animation: fadeInDown 1s forwards 0.5s;
+            width: 100%;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-family: 'Dancing Script', cursive;
+            font-size: 3.5rem;
+            color: #d32f75;
+            text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8);
+            margin-bottom: 5px;
+        }
+
+        /* Pre-envelope prompt */
+        .pre-prompt {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 40px;
+            padding: 40px;
+            margin: 20px;
+            max-width: 600px;
+            box-shadow: 0 20px 50px rgba(210, 50, 120, 0.3);
+            border: 3px solid #ff9eb5;
+            text-align: center;
+            backdrop-filter: blur(8px);
+            transition: opacity 0.6s, transform 0.6s;
+            z-index: 50;
+            position: relative;
+        }
+        .pre-prompt.hide {
+            opacity: 0;
+            transform: scale(0.8);
+            pointer-events: none;
+            display: none;
+        }
+        .pre-prompt h2 {
+            font-family: 'Dancing Script', cursive;
+            font-size: 3rem;
+            color: #d32f75;
+            margin-bottom: 20px;
+        }
+        .prompt-buttons {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 30px 0 10px;
+        }
+        .prompt-btn {
+            padding: 15px 45px;
+            border: none;
+            border-radius: 60px;
+            font-size: 1.8rem;
+            font-weight: 600;
+            font-family: 'Dancing Script', cursive;
+            cursor: pointer;
+            transition: all 0.4s;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        .prompt-btn.yes {
+            background: linear-gradient(45deg, #ff4d7e, #ff8e6b);
+            color: white;
+        }
+        .prompt-btn.yes:hover {
+            transform: scale(1.15) translateY(-5px);
+            box-shadow: 0 20px 35px #ff4d7e;
+        }
+        .prompt-btn.no {
+            background: #444;
+            color: #eee;
+        }
+        .prompt-btn.no:hover {
+            background: #222;
+            transform: scale(1.1) rotate(2deg);
+        }
+
+        /* Sorry video modal */
+        .sorry-video-modal {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 2000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            visibility: hidden;
+            opacity: 0;
+            transition: 0.5s;
+        }
+        .sorry-video-modal.active {
+            visibility: visible;
+            opacity: 1;
+        }
+        .sorry-content {
+            background: #1a1a2e;
+            border-radius: 30px;
+            padding: 30px;
+            max-width: 800px;
+            width: 90%;
+            text-align: center;
+            border: 4px solid #ff6b8b;
+            box-shadow: 0 0 60px #ff2850;
+        }
+        .sorry-content h2 {
+            font-family: 'Dancing Script', cursive;
+            font-size: 3rem;
+            color: #ff9eb5;
+            margin-bottom: 10px;
+        }
+        .video-container {
+            width: 100%;
+            border-radius: 20px;
+            overflow: hidden;
+            margin: 20px 0;
+            box-shadow: 0 10px 30px #ff2850;
+        }
+        .video-container video {
+            width: 100%;
+            max-height: 350px;
+            object-fit: cover;
+            display: block;
+        }
+        .sorry-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin: 25px 0 10px;
+        }
+        .sorry-btn {
+            padding: 12px 30px;
+            font-size: 1.5rem;
+            font-family: 'Dancing Script', cursive;
+            border: none;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        .sorry-btn.love {
+            background: #ffb3c6;
+            color: #a1335e;
+        }
+        .sorry-btn.love:hover {
+            background: #ff9eb5;
+            transform: scale(1.1);
+        }
+
+        /* Envelope section */
+        .envelope-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            margin: 0;
+            position: relative;
+            min-height: 280px;
+        }
+
+        .envelope-container {
+            position: relative;
+            width: 320px;
+            height: 220px;
+            cursor: pointer;
+            z-index: 30;
+            margin: 0 auto;
+        }
+
+        .envelope {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .envelope.open {
+            transform: translateY(-40px);
+        }
+
+        .envelope-body {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #ff8e6b 0%, #ff6b8b 100%);
+            border-radius: 0 0 10px 10px;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .envelope-flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 160px solid transparent;
+            border-right: 160px solid transparent;
+            border-top: 110px solid #ff4d7e;
+            transform-origin: top;
+            transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 3;
+            filter: drop-shadow(0 -5px 10px rgba(0, 0, 0, 0.2));
+        }
+
+        .envelope.open .envelope-flap {
+            transform: rotateX(180deg) translateY(-30px);
+        }
+
+        .envelope-side-left, .envelope-side-right {
+            position: absolute;
+            width: 0;
+            height: 0;
+            bottom: 0;
+        }
+
+        .envelope-side-left {
+            left: 0;
+            border-bottom: 110px solid #ff7b9c;
+            border-left: 160px solid transparent;
+            z-index: 0;
+        }
+
+        .envelope-side-right {
+            right: 0;
+            border-bottom: 110px solid #ff7b9c;
+            border-right: 160px solid transparent;
+            z-index: 0;
+        }
+
+        .heart-seal {
+            position: absolute;
+            top: -80px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70px;
+            height: 70px;
+            background-color: #ff2850;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 4;
+            animation: heartbeat 1.5s infinite;
+            box-shadow: 0 0 30px rgba(255, 40, 80, 0.8);
+            border: 3px solid white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .heart-seal:hover {
+            transform: translateX(-50%) scale(1.1);
+        }
+
+        .heart-seal i {
+            color: white;
+            font-size: 1.8rem;
+        }
+
+        .letter {
+            position: absolute;
+            width: 95%;
+            height: 95%;
+            background: white;
+            border-radius: 8px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            z-index: 2;
+            padding: 25px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.5s 0.3s;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 107, 139, 0.2);
+        }
+
+        .envelope.open .letter {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .letter p {
+            color: #d32f75;
+            font-weight: 600;
+            font-size: 1.5rem;
+            font-family: 'Dancing Script', cursive;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+            margin-bottom: 10px;
+        }
+
+        .letter .small-text {
+            font-size: 1rem;
+            opacity: 0.8;
+            font-family: 'Poppins', sans-serif;
+            color: #7a4b7c;
+        }
+
+        .click-hint {
+            margin-top: 20px;           /* increased for better spacing */
+            color: #7a4b7c;
+            font-style: italic;
+            opacity: 0.8;
+            animation: pulse 2s infinite;
+            font-size: 1.1rem;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 8px 15px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        /* Message container */
+        .message-container {
+            background: rgba(255, 255, 255, 0.92);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px auto 20px;
+            max-width: 750px;
+            width: 100%;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+            border: 3px solid #ff9eb5;
+            opacity: 0;
+            transform: translateY(30px) scale(0.95);
+            transition: opacity 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55), 
+                        transform 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+            z-index: 20;
+            backdrop-filter: blur(5px);
+            visibility: hidden;
+        }
+
+        .message-container.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            visibility: visible;
+        }
+
+        .message-header {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #d32f75;
+        }
+
+        .message-header h2 {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.8rem;
+            margin-bottom: 5px;
+        }
+
+        .message-content {
+            line-height: 1.8;
+            font-size: 1rem;
+            color: #5a3d5c;
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .message-content p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .message-content .highlight {
+            color: #d32f75;
+            font-weight: 600;
+        }
+
+        .signature {
+            text-align: center;
+            margin-top: 30px;
+            font-family: 'Dancing Script', cursive;
+            font-size: 2rem;
+            color: #d32f75;
+            font-weight: 700;
+            position: relative;
+            padding: 10px 0;
+        }
+
+        /* Next Button */
+        .next-button-container {
+            margin: 20px 0 30px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            opacity: 0;
+            transform: scale(0.9);
+            transition: opacity 0.6s 0.5s, transform 0.6s 0.5s;
+        }
+        .message-container.show ~ .next-button-container,
+        .next-button-container.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .next-button {
+            padding: 16px 45px;
+            background: linear-gradient(45deg, #ff6b8b, #ff8e6b);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 15px 35px rgba(255, 107, 139, 0.5);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            z-index: 50;
+            font-family: 'Poppins', sans-serif;
+            letter-spacing: 1px;
+        }
+
+        .next-button:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 20px 40px rgba(255, 107, 139, 0.7);
+        }
+
+        .next-button i {
+            margin-right: 10px;
+            animation: floatUpDown 2s infinite alternate;
+        }
+
+        .hearts-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+            opacity: 0;
+            transition: opacity 1.5s ease;
+        }
+        .hearts-bg.active {
+            opacity: 1;
+        }
+
+        .heart-bg {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 20px;
+            opacity: 0;
+            animation: float 15s infinite linear;
+        }
+
+        /* Fireworks container */
+        .fireworks-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
+            display: none;
+            overflow: hidden;
+        }
+
+        .firework-heart {
+            position: absolute;
+            color: #ff2850;
+            opacity: 0;
+            font-size: 20px;
+            animation: fireworkExplode 2s ease-out infinite;
+        }
+
+        /* Image Gallery Modal */
+        .image-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.8s ease;
+        }
+
+        .image-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-header {
+            width: 90%;
+            max-width: 1200px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 0 20px;
+        }
+
+        .modal-title {
+            font-family: 'Dancing Script', cursive;
+            font-size: 3rem;
+            color: #ff6b8b;
+            text-align: center;
+            flex-grow: 1;
+            text-shadow: 0 2px 10px rgba(255, 107, 139, 0.5);
+            background: linear-gradient(45deg, #ff6b8b, #ff8e6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .close-modal {
+            background: rgba(255, 107, 139, 0.2);
+            border: 2px solid #ff6b8b;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            transition: all 0.3s;
+            backdrop-filter: blur(5px);
+        }
+
+        .close-modal:hover {
+            background: rgba(255, 107, 139, 0.4);
+            transform: rotate(90deg);
+            box-shadow: 0 0 20px rgba(255, 107, 139, 0.5);
+        }
+
+        .modal-gallery {
+            width: 95%;
+            max-width: 1200px;
+            height: 75vh;
+            overflow-y: auto;
+            padding: 20px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 107, 139, 0.2);
+        }
+
+        .modal-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .modal-item {
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            transition: all 0.4s ease;
+            height: 220px;
+            position: relative;
+        }
+
+        .modal-item:hover {
+            transform: translateY(-10px) scale(1.03);
+            box-shadow: 0 20px 40px rgba(255, 107, 139, 0.6);
+        }
+
+        .modal-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+
+        .modal-item:hover img {
+            transform: scale(1.1);
+        }
+
+        .music-control {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            z-index: 100;
+            transition: all 0.3s;
+            border: 2px solid #ff6b8b;
+            opacity: 0;
+            transition: opacity 0.5s;
+            pointer-events: none;
+        }
+        .music-control.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .music-control:hover {
+            transform: scale(1.1);
+            background: #fff0f5;
+        }
+
+        .music-control i {
+            font-size: 1.5rem;
+            color: #ff6b8b;
+        }
+
+        /* Animations */
+        @keyframes fadeInDown { to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+        @keyframes heartbeat {
+            0% { transform: translateX(-50%) scale(1); }
+            5% { transform: translateX(-50%) scale(1.1); }
+            10% { transform: translateX(-50%) scale(1); }
+            15% { transform: translateX(-50%) scale(1.2); }
+            50% { transform: translateX(-50%) scale(1); }
+            100% { transform: translateX(-50%) scale(1); }
+        }
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.8; }
+            90% { opacity: 0.8; }
+            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+        }
+        @keyframes floatImage {
+            0% { transform: translateY(100vh) rotate(0deg) scale(0.8); opacity: 0; }
+            10% { opacity: 0.9; }
+            90% { opacity: 0.9; }
+            100% { transform: translateY(-100px) rotate(15deg) scale(1); opacity: 0; }
+        }
+        @keyframes pulse { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
+        @keyframes floatUpDown { 0% { transform: translateY(0); } 100% { transform: translateY(-5px); } }
+        @keyframes fireworkExplode {
+            0% { transform: translate(0, 0) scale(0) rotate(0deg); opacity: 1; }
+            100% { transform: translate(var(--tx), var(--ty)) scale(1.5) rotate(360deg); opacity: 0; }
+        }
+        @media (max-width: 768px) {
+            .header h1 { font-size: 2.8rem; }
+            .envelope-container { width: 280px; height: 200px; }
+            .heart-seal { top: -70px; width: 60px; height: 60px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating images + hearts (initially inactive) -->
+    <div class="floating-images" id="floatingImages"></div>
+    <div class="light-overlay"></div>
+    <div class="hearts-bg" id="heartsBg"></div>
+    <div class="fireworks-container" id="fireworksContainer"></div>
+    
+    <!-- Image Gallery Modal -->
+    <div class="image-modal" id="imageModal">
+        <div class="modal-header">
+            <h2 class="modal-title"></h2>
+            <button class="close-modal" id="closeModal"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-gallery"><div class="modal-grid" id="modalGrid"></div></div>
+    </div>
+
+    <!-- Music Control (initially hidden) -->
+    <div class="music-control" id="musicControl"><i class="fas fa-volume-up"></i></div>
+
+    <!-- PRE-ENVELOPE PROMPT (no floating elements yet) -->
+    <div class="pre-prompt" id="prePrompt">
+        <h2>Do you love me?</h2>
+        <div class="prompt-buttons">
+            <button class="prompt-btn yes" id="promptYes">Yes</button>
+            <button class="prompt-btn no" id="promptNo">No</button>
+        </div>
+    </div>
+
+    <!-- SORRY VIDEO MODAL (fixed structure) -->
+    <div class="sorry-video-modal" id="sorryModal">
+        <div class="sorry-content">
+            <h2>wag oy😢</h2>
+           <div class="video-container">
+                <video id="sorryVideo" autoplay loop playsinline>
+                    <source src="wawa.mp4" type="video/mp4">
+                </video>
+            </div>
+            <p style="color:#ffe6f0; font-size:1.2rem;"></p>
+            <div class="sorry-buttons">
+                <button class="sorry-btn love" id="sorryLove">Of course I love you!</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main content (initially hidden) -->
+    <div class="container" id="mainContent" style="display: none;">
+        <br>
+        <div class="header"><h1>For Angelo Chua</h1></div>
+        <br><br><br><br><br>
+        <!-- Envelope section -->
+        <div class="envelope-section">
+            <div class="envelope-container" id="envelopeContainer">
+                <div class="envelope" id="envelope">
+                    <div class="envelope-flap"></div>
+                    <div class="envelope-body"></div>
+                    <div class="envelope-side-left"></div>
+                    <div class="envelope-side-right"></div>
+                    <div class="heart-seal" id="heartSeal"><i class="fas fa-heart"></i></div>
+                    <div class="letter">
+                        <p>❤️</p>
+                        <p class="small-text"></p>
+                    </div>
+                </div>
+            </div>
+            <p class="click-hint"></p>
+        </div>
+        
+        <div class="message-container" id="messageContainer">
+            <div class="message-header">
+                <h2>To My Mahal</h2>
+            </div>
+            <div class="message-content">
+                <p>Happy Valentine's Day, and advance happy 4 months to us 🤍</p>
+                <p>Alam mo naman na hindi talaga ako ganoon kagaling maging vocal sa gusto kong sabihin. Madalas nauutal ako, kinakabahan, at minsan nahihirapan akong ilabas lahat ng nararamdaman ko. I'm sorry if I don't have flowers for you, or gifts, chocolate, surprises, or planned dates, but I hope ma-appreciate mo 'to. Sa pamamagitan nito, gusto kong malaman mo kung gaano ka kahalaga sa akin. Pero 'wag mo sana 'kong ipapaulit na sabihin 'to nang personal mahal ha. But I wanted you to know na lahat ng mababasa mo dito ay totoo. 🥺</p>                <p>Una sa lahat, <span class="highlight">thank you for loving me the way you do.</span> Hindi lang kapag okay ako at ang saya ng mood ko, kundi pati kapag toyo mode, tahimik mode, at sabog mode ako. Thank you for staying kahit minsan ang arte ko at kailangan mo pang manghula kung anong problema ko, pero nahuhulaan mo pa rin somehow. Thank you for choosing me kahit alam kong may mga flaws ako at marami pa akong kailangang ayusin sa sarili ko.</p>
+                <p><span class="highlight">Thank you for being one of my biggest motivations.</span> Sa tuwing nagda-doubt ako sa sarili ko, ikaw yung unang tumatayo sa tabi ko. Ikaw yung unang naniniwala sa akin kahit ako mismo hindi pa sigurado sa sarili ko. Kapag feeling ko hindi ako sapat o hindi pa ako ganun kagaling, ikaw yung nagpapaalala sa akin na kaya ko, na may potential ako, at magaling ako.</p>
+                <p>Thank you for making me laugh kahit sobrang stress na ako. Thank you sa pang-aasar mo, sa pangungulit mo, at sa pag-share mo ng mga bagay na hindi ko pa alam. Salamat sa mga lectures mo kahit minsan tinatawanan kita HAHAHA. Deep inside, sobrang na-a-appreciate ko lahat ng yun kasi alam kong ginagawa mo yun dahil mahal mo ako at gusto mo akong matuto at maging mas maayos na version ng sarili ko.</p>
+                <p>Thank you sa sobrang haba mong pasensya, lalo na kapag clumsy ako, makulit, o paulit-ulit sa mga tanong. Thank you for understanding me even when I can't explain myself properly. Thank you for loving me even when I'm not at my best.</p>
+                <p>Thank you rin for being my personal doctor 😅 AHHHAHHA lagi mo akong pinaaalalahanan na alagaan ang skin ko, uminom ng tubig (kahit ikaw mismo tamad uminom ng tubig), at magpahinga kahit minsan pasaway ako. Sorry kung minsan hindi ako seryoso kapag seryoso ka, at sorry din kung minsan sobrang seryoso ako kapag nagbibiro ka lang. I know ang kulit nun, pero thank you for still being patient with me. Kahit ganun, I appreciate every reminder and every care, kasi alam kong ginagawa mo yun dahil mahal mo ako, at mahal na mahal din kita.</p>
+                <p>Salamat din sa pagsama mo sa akin sa thesis journey ko. Alam kong hindi madali yun, nadamay ka na rin sa stress ko, sa puyat, sa reklamo, at sa pressure ng school works ko. Pero nandiyan ka pa rin, sumusuporta, nakikinig, at nagpapalakas ng loob ko. Hindi ko man palaging nasasabi, pero sobrang laking pasasalamat ko na dumating ka sakin, at ikaw ang pinaka magandang plot twist ko mahal.</p>
+                <p>Gusto ko ring humingi ng tawad sa mga times na nasaktan kita, napaiyak ka, o nagawa ko yung mga bagay na alam kong hindi mo deserve. Kung na disrespect kita. I'm really, really sorry, mahal. Sorry kung minsan naging pabigat ako sa puso mo. Sorry kung may mga pagkakataong hindi ko naalagaan yung nararamdaman mo gaya ng dapat.</p>
+                <p>Gusto kong malaman mo na sincere yung pagsisisi ko. I promise you na hindi ko na uulitin yung mga bagay na naging dahilan ng sakit at heartbreak mo. Hindi ko sasayangin yung tiwala, pagmamahal, effort, at chance na binigay mo sa akin kahit alam kong nasaktan kita noon. I'm learning, I'm trying, and I'm choosing to be better, not just for you, but for us.</p>
+                <p>Mahal, I want you to know how much I appreciate you. thank you for loving me in ways I don't always know how to ask for. Thank you for being my comfort, my kakampi, at minsan, my reminder kapag ang kulit ko na. Kahit hindi ako palaging expressive, <span class="highlight">MAHAL NA MAHAL KITA</span> more than words can explain.</p>
+                <p><span class="highlight">I love you so much.</span> Mahal na mahal kita, at sana matiis mo pa rin yung ugali ko minsan HAHAHA. I promise I'll keep trying to grow, to understand, and to love you better every day.</p>
+                <p>Happy Valentine's Day, mahal. Thank you for being my safe place, my partner, and my favorite person.</p>
+            </div>
+            <div class="signature">Mahal na mahal kita 🤍</div>
+        </div>
+    </div>
+
+    <!-- Next Button (placed outside container but still within body flow) -->
+    <div class="next-button-container" id="nextButtonContainer">
+        <button class="next-button" id="nextButton"><i class="fas fa-heart"></i> Our Memories</button>
+    </div>
+
+    <audio id="backgroundMusic" loop><source src="sounds.mp3" type="audio/mpeg"></audio>
+
+    <script>
+        (function() {
+            // DOM elements
+            const prePrompt = document.getElementById('prePrompt');
+            const mainContent = document.getElementById('mainContent');
+            const promptYes = document.getElementById('promptYes');
+            const promptNo = document.getElementById('promptNo');
+            const sorryModal = document.getElementById('sorryModal');
+            const sorryLove = document.getElementById('sorryLove');
+            const sorryVideo = document.getElementById('sorryVideo');
+            
+            const envelope = document.getElementById('envelope');
+            const envelopeContainer = document.getElementById('envelopeContainer');
+            const heartSeal = document.getElementById('heartSeal');
+            const messageContainer = document.getElementById('messageContainer');
+            const musicControl = document.getElementById('musicControl');
+            const backgroundMusic = document.getElementById('backgroundMusic');
+            const heartsBg = document.getElementById('heartsBg');
+            const floatingImages = document.getElementById('floatingImages');
+            const nextButton = document.getElementById('nextButton');
+            const nextButtonContainer = document.getElementById('nextButtonContainer');
+            const fireworksContainer = document.getElementById('fireworksContainer');
+            const imageModal = document.getElementById('imageModal');
+            const modalGrid = document.getElementById('modalGrid');
+            const closeModal = document.getElementById('closeModal');
+            const clickHint = document.querySelector('.click-hint');
+
+            // Images array
+            const romanticImages = [
+                "1.jpg", "2.jpg", "3.jpg", "4.jpg", "5.jpg", "6.jpg", "7.jpg", "8.jpg", "9.jpg",
+                "10.jpg", "11.jpg", "12.jpg", "13.jpg", "14.jpg", "15.jpg", "16.jpg", "17.jpg", "18.jpg"
+            ];
+
+            // State
+            let isMusicPlaying = false;
+            let isEnvelopeOpen = false;
+            let isMessageShown = false;
+            let isFireworksActive = false;
+            let fireworksInterval = null;
+            let floatingIntervals = { images: null, hearts: null };
+            let effectsActivated = false;
+
+            // --- Helper to show main content & start effects ---
+            function showMainContentAndEffects() {
+                prePrompt.classList.add('hide');
+                mainContent.style.display = 'flex';   // show main content
+                activateFloatingEffects();
+                // Auto-open envelope after a short delay (optional)
+                setTimeout(() => {
+                    if (!isEnvelopeOpen) toggleEnvelope();
+                }, 2000);
+            }
+
+            // ---------- FUNCTION TO START ALL FLOATING EFFECTS & MUSIC ----------
+            function activateFloatingEffects() {
+                if (effectsActivated) return;
+                effectsActivated = true;
+
+                floatingImages.classList.add('active');
+                heartsBg.classList.add('active');
+                musicControl.classList.add('active');
+
+                if (!isMusicPlaying) {
+                    backgroundMusic.volume = 0.4;
+                    backgroundMusic.play().catch(() => {});
+                    musicControl.innerHTML = '<i class="fas fa-volume-up"></i>';
+                    isMusicPlaying = true;
+                }
+
+                for(let i=0; i<5; i++) setTimeout(createFloatingImage, i*1000);
+                floatingIntervals.images = setInterval(() => {
+                    if(document.querySelectorAll('.floating-image').length < 8) createFloatingImage();
+                }, 4000);
+
+                for(let i=0; i<10; i++) setTimeout(createFloatingHeart, i*300);
+                floatingIntervals.hearts = setInterval(() => {
+                    if(document.querySelectorAll('.heart-bg').length < 20) createFloatingHeart();
+                }, 1500);
+            }
+
+            // ---------- PROMPT LOGIC ----------
+            promptYes.addEventListener('click', () => {
+                showMainContentAndEffects();
+            });
+
+            // No button: show video modal
+            promptNo.addEventListener('click', () => {
+                sorryModal.classList.add('active');
+                // Ensure video plays (autoplay might be blocked; we call play)
+                if (sorryVideo) {
+                    sorryVideo.play().catch(e => console.log('Video play failed:', e));
+                }
+            });
+
+            // "Of course I love you!" button inside video modal: close modal, show main content & effects
+            sorryLove.addEventListener('click', () => {
+                sorryModal.classList.remove('active');
+                if (sorryVideo) {
+                    sorryVideo.pause();
+                    sorryVideo.currentTime = 0; // reset to start
+                }
+                // Show main content exactly like Yes button does
+                showMainContentAndEffects();
+                // Extra hearts for effect
+                for(let i=0;i<10;i++) setTimeout(createFloatingHeart, i*100);
+            });
+
+            // ---------- ENVELOPE TOGGLE ----------
+            function toggleEnvelope() {
+                isEnvelopeOpen = !isEnvelopeOpen;
+                if (isEnvelopeOpen) {
+                    envelope.classList.add('open');
+                    heartSeal.style.animation = 'heartbeat 0.5s ease-out forwards';
+                    if (!isMessageShown) {
+                        setTimeout(() => {
+                            messageContainer.classList.add('show');
+                            nextButtonContainer.classList.add('show');
+                            isMessageShown = true;
+                        }, 600);
+                    }
+                    if(clickHint) clickHint.textContent = "";
+                } else {
+                    envelope.classList.remove('open');
+                    if(clickHint) clickHint.textContent = "Click the heart seal";
+                }
+            }
+
+            envelopeContainer.addEventListener('click', toggleEnvelope);
+            heartSeal.addEventListener('click', (e) => { e.stopPropagation(); toggleEnvelope(); });
+
+            // ---------- GALLERY & FIREWORKS ----------
+            function createModalGallery() {
+                modalGrid.innerHTML = '';
+                romanticImages.forEach((img, index) => {
+                    const item = document.createElement('div');
+                    item.classList.add('modal-item');
+                    item.innerHTML = `<img src="${img}" alt="Memory ${index+1}" loading="lazy">`;
+                    modalGrid.appendChild(item);
+                });
+            }
+
+            function startInfiniteFireworks() {
+                isFireworksActive = true;
+                fireworksContainer.style.display = 'block';
+                fireworksInterval = setInterval(() => {
+                    for(let i=0;i<3;i++) createFireworkParticle(Math.random()*window.innerWidth, Math.random()*window.innerHeight);
+                }, 150);
+            }
+            function stopInfiniteFireworks() {
+                isFireworksActive = false;
+                clearInterval(fireworksInterval);
+                fireworksInterval = null;
+                setTimeout(() => { fireworksContainer.style.display = 'none'; fireworksContainer.innerHTML = ''; }, 2000);
+            }
+            function createFireworkParticle(x, y) {
+                const angle = Math.random() * Math.PI*2;
+                const distance = 50 + Math.random()*150;
+                const tx = Math.cos(angle)*distance;
+                const ty = Math.sin(angle)*distance;
+                const heart = document.createElement('div');
+                heart.classList.add('firework-heart');
+                heart.innerHTML = '<i class="fas fa-heart"></i>';
+                heart.style.left = `${x}px`;
+                heart.style.top = `${y}px`;
+                heart.style.color = `hsl(${Math.random()*360}, 100%, 65%)`;
+                heart.style.fontSize = `${Math.random()*20+10}px`;
+                heart.style.animation = `fireworkExplode ${1+Math.random()}s ease-out forwards`;
+                heart.style.setProperty('--tx', `${tx}px`);
+                heart.style.setProperty('--ty', `${ty}px`);
+                fireworksContainer.appendChild(heart);
+                setTimeout(() => { if(heart.parentNode) heart.remove(); }, 2000);
+            }
+
+            nextButton.addEventListener('click', () => {
+                startInfiniteFireworks();
+                setTimeout(() => { 
+                    imageModal.classList.add('active'); 
+                    document.body.style.overflow = 'hidden'; 
+                }, 300);
+            });
+            closeModal.addEventListener('click', () => {
+                imageModal.classList.remove('active');
+                document.body.style.overflow = 'auto';
+                stopInfiniteFireworks();
+            });
+            imageModal.addEventListener('click', (e) => { if(e.target === imageModal) closeModal.click(); });
+
+            // ---------- FLOATING ELEMENTS ----------
+            function createFloatingImage() {
+                const wrap = document.createElement('div');
+                wrap.classList.add('floating-image');
+                const size = Math.random() * 150 + 150;
+                wrap.style.width = `${size}px`;
+                wrap.style.height = `${size}px`;
+                wrap.style.left = `${Math.random()*100}%`;
+                const img = document.createElement('img');
+                img.src = romanticImages[Math.floor(Math.random()*romanticImages.length)];
+                wrap.appendChild(img);
+                wrap.style.animation = `floatImage ${Math.random()*20+25}s linear ${Math.random()*5}s forwards`;
+                floatingImages.appendChild(wrap);
+                setTimeout(() => wrap.remove(), 30000);
+            }
+            function createFloatingHeart() {
+                const h = document.createElement('div');
+                h.classList.add('heart-bg');
+                h.innerHTML = '<i class="fas fa-heart"></i>';
+                h.style.left = Math.random()*100 + 'vw';
+                h.style.fontSize = (Math.random()*25+15) + 'px';
+                h.style.color = `rgba(255, ${Math.random()*100+100}, ${Math.random()*100+150}, ${Math.random()*0.6+0.4})`;
+                h.style.animationDuration = (Math.random()*20+15) + 's';
+                heartsBg.appendChild(h);
+                setTimeout(() => h.remove(), 25000);
+            }
+
+            musicControl.addEventListener('click', () => {
+                if (!effectsActivated) return;
+                if(isMusicPlaying) {
+                    backgroundMusic.pause();
+                    musicControl.innerHTML = '<i class="fas fa-volume-mute"></i>';
+                } else {
+                    backgroundMusic.play().catch(()=>{});
+                    musicControl.innerHTML = '<i class="fas fa-volume-up"></i>';
+                }
+                isMusicPlaying = !isMusicPlaying;
+            });
+
+            // Initialize gallery
+            createModalGallery();
+        })();
+    </script>
+</body>
+</html>
